@@ -1,0 +1,11 @@
+.env
+.git
+.dvc
+data
+models
+reports
+mlartifacts
+mlflow.db
+aula*
+desafio*
+**/__pycache__
