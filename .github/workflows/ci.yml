@@ -17,3 +17,46 @@ jobs:
         run: pip install -r requirements-api.txt -r requirements-dev.txt
       - name: Testes
         run: pytest -q
+
+  imagem:
+    needs: testes                               # só roda se os testes passarem
+    if: github.event_name == 'push'             # em pull request, só os testes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write                           # permite publicar no GitHub Container Registry
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Nome da imagem
+        # ghcr.io/<usuário>/<repositório>, em minúsculas (o GitHub Container Registry não aceita maiúsculas)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: docker build -t "$IMAGE:latest" -t "$IMAGE:${GITHUB_SHA::7}" .
+
+      - name: Teste do container (smoke test)
+        # O container sobe? Carrega o @champion do DagsHub? Responde uma previsão?
+        env:
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          # TODO 1: copie a linha de cima mais duas vezes, trocando URI por USERNAME e depois por PASSWORD
+          #   (nos dois lugares da linha: antes dos dois-pontos e dentro do secrets)
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+        run: |
+          docker run -d --name api -p 8000:8000 \
+            -e MLFLOW_TRACKING_URI -e MLFLOW_TRACKING_USERNAME -e MLFLOW_TRACKING_PASSWORD \
+            "$IMAGE:latest"
+         # curl --fail --silent --retry 12 --retry-delay 5 --retry-all-errors localhost:8000/health
+          # TODO 2: o curl do POST /predict da T1 (passo 3 da Parte 1), com --fail --silent no lugar de -s.
+          #   --fail faz o curl dar erro se a API responder com erro: é isso que deixa o job vermelho.
+          curl --fail --silent -X POST localhost:8000/predict -H "Content-Type: application/json" -d @api/exemplo.json
+      - name: Logs do container
+        if: always()
+        run: docker logs api
+
+      - name: Login no GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push
+        run: docker push --all-tags "$IMAGE"
