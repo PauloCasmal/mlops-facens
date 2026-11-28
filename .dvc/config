@@ -1,4 +1,6 @@
 [core]
-    remote = local
+    remote = origin
 ['remote "local"']
     url = ../../dvc-storage
+['remote "origin"']
+    url = https://dagshub.com/anasegatelli/mlops-facens.dvc

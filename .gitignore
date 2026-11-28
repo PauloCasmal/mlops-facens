@@ -11,3 +11,5 @@ mlruns/
 
 # Dados: nunca vão para o Git. Quem versiona é o DVC (arquivos .dvc entram no Git).
 data/**/*.csv
+.env
+/models
