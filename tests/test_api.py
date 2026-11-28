@@ -41,7 +41,7 @@ def test_hora_invalida(client):
     hora_errada = {**EXEMPLO, "hr": 25}
     # TODO: mande a hora_errada (como o test_predict manda o EXEMPLO) e confira o código de erro
     r = client.post("/predict", json=hora_errada)
-    assert r.status_code == ...
+    assert r.status_code == 422
 
 
 def test_campo_faltando(client):
@@ -49,7 +49,7 @@ def test_campo_faltando(client):
     del sem_temp["temp"]
     # TODO: mande o sem_temp e confira o código de erro
     r = client.post("/predict", json=sem_temp)
-    assert r.status_code == ...
+    assert r.status_code == 422
 
 
 def test_contrato_com_o_treino():

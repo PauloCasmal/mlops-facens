@@ -3,7 +3,7 @@ split:
 
 train:
   learning_rate: 0.1
-  max_iter: 300
+  max_iter: 5
   max_leaf_nodes: 31
   random_state: 42
 
