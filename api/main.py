@@ -24,7 +24,7 @@ class Hora(BaseModel):
     season: int = Field(ge=1, le=4, description="estação do ano (1 a 4)")
     yr: int = Field(ge=0, le=1, description="ano (0 = 2011, 1 = 2012)")
     # TODO: troque os ... pelos limites (ge=..., le=...) de cada campo, como nos dois de cima
-     mnth: int = Field(ge=1, le=12, description="mês")
+    mnth: int = Field(ge=1, le=12, description="mês")
     hr: int = Field(ge=0, le=23, description="hora do dia")
     holiday: int = Field(ge=0, le=1, description="feriado (0 ou 1)")
     weekday: int = Field(ge=0, le=6, description="dia da semana (0 = domingo)")
