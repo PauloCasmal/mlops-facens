@@ -33,12 +33,24 @@ stages:
     outs:
     - models
 
-  compare:
-    cmd: python desafio01/compare_models.py
+  evaluate:
+    cmd: python src/evaluate.py
     deps:
-      - desafio01/compare_models.py
-      - models
-      - data/split/test.csv
+    - src/evaluate.py
+    - src/bike.py
+    - models
+    - data/split/test.csv
     metrics:
-      - reports/comparacao.json:
-          cache: false
+    - metrics.json:
+        cache: false
+
+  plot:
+    cmd: python src/plot.py
+    deps:
+    - src/plot.py
+    - src/bike.py
+    - models
+    - data/split/test.csv
+    plots:
+    - reports/previsto_vs_real.png:
+        cache: false
