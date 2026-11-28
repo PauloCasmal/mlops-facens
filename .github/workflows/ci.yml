@@ -1,0 +1,19 @@
+name: CI/CD
+
+on:
+  push:                   # roda a cada push, em qualquer branch (hoje, a aula_02)
+  pull_request:           # e a cada pull request
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest            # uma máquina nova, criada só para este job
+    steps:
+      - uses: actions/checkout@v6     # baixa o repositório
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependências
+        run: pip install -r requirements-api.txt -r requirements-dev.txt
+      - name: Testes
+        run: pytest -q
